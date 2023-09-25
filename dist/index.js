@@ -376,7 +376,7 @@ function createPullRequest(inputs) {
             // Configure auth
             if (baseRemote.protocol == 'HTTPS') {
                 core.startGroup('Configuring credential for HTTPS authentication');
-                yield gitAuthHelper.configureToken(inputs.token);
+                yield gitAuthHelper.configureToken(inputs.gitToken);
                 core.endGroup();
             }
             core.startGroup('Checking the base repository state');
@@ -1206,6 +1206,7 @@ function run() {
         try {
             const inputs = {
                 token: core.getInput('token'),
+                gitToken: core.getInput('git-token'),
                 path: core.getInput('path'),
                 addPaths: utils.getInputAsArray('add-paths'),
                 commitMessage: core.getInput('commit-message'),
@@ -1228,6 +1229,9 @@ function run() {
                 draft: core.getBooleanInput('draft')
             };
             core.debug(`Inputs: ${(0, util_1.inspect)(inputs)}`);
+            if (!inputs.gitToken) {
+                inputs.gitToken = inputs.token;
+            }
             yield (0, create_pull_request_1.createPullRequest)(inputs);
         }
         catch (error) {
@@ -1995,7 +1999,7 @@ class OidcClient {
                 .catch(error => {
                 throw new Error(`Failed to get ID Token. \n 
         Error Code : ${error.statusCode}\n 
-        Error Message: ${error.message}`);
+        Error Message: ${error.result.message}`);
             });
             const id_token = (_a = res.result) === null || _a === void 0 ? void 0 : _a.value;
             if (!id_token) {
@@ -13939,7 +13943,7 @@ for (let i = 0; i < 256; ++i) {
 function unsafeStringify(arr, offset = 0) {
   // Note: Be careful editing this code!  It's been tuned for performance
   // and works in ways you may not expect. See https://github.com/uuidjs/uuid/pull/434
-  return byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + '-' + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + '-' + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + '-' + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + '-' + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]];
+  return (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + '-' + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + '-' + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + '-' + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + '-' + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase();
 }
 
 function stringify(arr, offset = 0) {
