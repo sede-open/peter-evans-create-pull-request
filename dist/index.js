@@ -322,7 +322,7 @@ const git_auth_helper_1 = __nccwpck_require__(2565);
 const utils = __importStar(__nccwpck_require__(918));
 function createPullRequest(inputs) {
     return __awaiter(this, void 0, void 0, function* () {
-        let gitAuthHelper;
+        let gitAuthHelper, git;
         try {
             if (!inputs.token) {
                 throw new Error(`Input 'token' not supplied. Unable to continue.`);
@@ -342,7 +342,7 @@ function createPullRequest(inputs) {
             // Get the repository path
             const repoPath = utils.getRepoPath(inputs.path);
             // Create a git command manager
-            const git = yield git_command_manager_1.GitCommandManager.create(repoPath);
+            git = yield git_command_manager_1.GitCommandManager.create(repoPath);
             // Save and unset the extraheader auth config if it exists
             core.startGroup('Prepare git configuration');
             gitAuthHelper = new git_auth_helper_1.GitAuthHelper(git);
@@ -505,6 +505,9 @@ function createPullRequest(inputs) {
         finally {
             // Remove auth and restore persisted auth config if it existed
             core.startGroup('Restore git configuration');
+            if (inputs.pushToFork) {
+                yield git.exec(['remote', 'rm', 'fork']);
+            }
             yield gitAuthHelper.removeAuth();
             yield gitAuthHelper.restorePersistedAuth();
             yield gitAuthHelper.removeSafeDirectory();
